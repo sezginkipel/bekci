@@ -27,8 +27,8 @@ export function edgeMatch(a: string, b: string): { prefix: number; suffix: numbe
 
 /**
  * Two different addresses that agree on enough edge characters to fool a glance.
- * Random base58 pairs share 6 edge characters with odds around 1 in 38 billion,
- * so a hit is deliberate. Both ends must match: real poisoners grind both.
+ * Two random base58 addresses pass this with odds of about 1 in 13 billion
+ * (3·58⁻⁶ minus overlaps), so a hit is deliberate. Both ends must match: real poisoners grind both.
  */
 export function isLookalike(a: string, b: string): boolean {
 	if (a === b) return false;

@@ -82,7 +82,9 @@ export function decodeTransaction(tx: Json, wallet: string, signature?: string):
 			if ((type === 'transfer' || type === 'transferWithSeed') && info.lamports !== undefined) {
 				const src = info.source ?? info.from;
 				const dst = info.destination ?? info.to;
-				if (src === wallet && dst !== wallet)
+				// SOL moved into the wallet's own token account is wrapping (wSOL), not a payment.
+				const ownTokenAccount = accts.get(dst)?.owner === wallet;
+				if (src === wallet && dst !== wallet && !ownTokenAccount)
 					events.push({ kind: 'sol_out', counterparty: dst, amount: String(info.lamports), decimals: 9 });
 				else if (dst === wallet && src !== wallet)
 					events.push({ kind: 'sol_in', counterparty: src, amount: String(info.lamports), decimals: 9 });

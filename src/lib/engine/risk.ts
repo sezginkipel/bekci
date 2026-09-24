@@ -86,7 +86,8 @@ export function applyRules(
 					if (imitated && !counterparties.has(to)) {
 						f.push({ kind: 'sent_to_lookalike', severity: 'danger', subject: to, imitates: imitated, amount: e.amount, decimals: e.decimals, mint: e.mint });
 					}
-					if (e.kind === 'sol_out') {
+					// Only plain transfers: inside swaps SOL routes through pools and vaults.
+					if (e.kind === 'sol_out' && isPlainTransfer(line)) {
 						const pre = opts.preLamports?.get(line.signature);
 						if (pre && pre > 0) {
 							const pct = Math.round((Number(e.amount) / pre) * 100);

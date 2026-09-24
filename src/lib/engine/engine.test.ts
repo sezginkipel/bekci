@@ -125,6 +125,26 @@ describe('rules', () => {
 		expect(counterparties.has(pool)).toBe(false);
 	});
 
+	it('does not treat wrapping SOL into your own wSOL account as an outflow (seen on mainnet swaps)', () => {
+		const WSOL_ACC = 'h311PLMr9zuD3zNGSeSb92NdFDWsXwh3Vsxd6uxxJah';
+		const PUMP = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
+		const wsol = (amount: string) => ({ accountIndex: 1, mint: 'So11111111111111111111111111111111111111112', owner: ME, programId: TOKEN_PROGRAM, uiTokenAmount: { amount, decimals: 9 } });
+		const line = decodeTransaction(
+			tx({
+				keys: [ME, WSOL_ACC, SYSTEM_PROGRAM, PUMP],
+				ixs: [solTransfer(ME, WSOL_ACC, 140_000_000), { programId: PUMP, accounts: [], data: '' }],
+				pre: [145_000_000, 0, 0, 0],
+				post: [5_000_000, 140_000_000, 0, 0],
+				tokenPre: [wsol('0')],
+				tokenPost: [wsol('140000000')]
+			}),
+			ME
+		);
+		expect(line.events.some((e) => e.kind === 'sol_out')).toBe(false);
+		applyRules([line], { preLamports: new Map([[line.signature, 145_000_000]]) });
+		expect(line.findings).toEqual([]);
+	});
+
 	it('flags an unlimited token approval as danger, a bounded one as warn', () => {
 		const approve = (amount: string) =>
 			decodeTransaction(
