@@ -1,7 +1,7 @@
 // Manual probe: scan a real mainnet wallet and print the report summary.
 // Usage: npx tsx scripts/probe.ts <address> [limit]
-import { makeRpc } from '../src/lib/server/rpc';
-import { scanWallet } from '../src/lib/server/scan';
+import { makeRpc } from '../src/lib/chain/rpc';
+import { scanWallet } from '../src/lib/chain/scan';
 
 const [addr, limit] = process.argv.slice(2);
 const rpc = makeRpc({ SOLAMI_API_KEY: process.env.SOLAMI_API_KEY, FALLBACK_RPC: process.env.FALLBACK_RPC });

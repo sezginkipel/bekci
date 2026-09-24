@@ -20,7 +20,8 @@ export default defineConfig({
 					'style-src': ['self', 'unsafe-inline'],
 					'img-src': ['self', 'data:'],
 					'font-src': ['self'],
-					'connect-src': ['self', 'https://cloudflareinsights.com'],
+					// Public RPCs: the browser reads the chain itself when the server is refused.
+					'connect-src': ['self', 'https://cloudflareinsights.com', 'https://solana-rpc.publicnode.com', 'https://api.mainnet-beta.solana.com'],
 					'object-src': ['none'],
 					'base-uri': ['self'],
 					'frame-ancestors': ['none'],
@@ -28,6 +29,5 @@ export default defineConfig({
 				}
 			}
 		})
-	],
-	test: { include: ['src/**/*.test.ts'] }
+	]
 });

@@ -38,7 +38,7 @@ export async function fetchDelegations(rpc: Rpc, owner: string): Promise<Delegat
 	return out;
 }
 
-export async function scanWallet(rpc: Rpc, address: string, limit = HISTORY_LIMIT): Promise<Report> {
+export async function scanWallet(rpc: Rpc, address: string, limit = rpc.source === 'solami' ? HISTORY_LIMIT : 25): Promise<Report> {
 	const [sigs, delegations, balance] = await Promise.all([
 		rpc.call<any[]>('getSignaturesForAddress', [address, { limit, commitment: 'confirmed' }]),
 		// Live permissions are best-effort on public nodes; the report says when they were not checked.
@@ -46,13 +46,22 @@ export async function scanWallet(rpc: Rpc, address: string, limit = HISTORY_LIMI
 		rpc.call<any>('getBalance', [address, { commitment: 'confirmed' }])
 	]);
 	const pre = new Map<string, number>();
-	const txs = await pool(sigs ?? [], 4, async (s: any) => {
+	// Public nodes throttle bursts from shared egress; go gentler there and give
+	// whatever failed one more, sequential, try so the log has as few holes as possible.
+	const fallback = rpc.source === 'fallback';
+	const get = async (s: any) => {
 		try {
 			return await fetchTransaction(rpc, s.signature);
 		} catch {
 			return null;
 		}
-	});
+	};
+	const txs = await pool(sigs ?? [], fallback ? 2 : 6, get);
+	for (let i = 0; i < txs.length; i++) {
+		if (txs[i]) continue;
+		await new Promise((r) => setTimeout(r, fallback ? 250 : 50));
+		txs[i] = await get(sigs[i]);
+	}
 	const lines: TxLine[] = [];
 	txs.forEach((tx, i) => {
 		const sig = sigs[i].signature as string;
