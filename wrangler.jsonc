@@ -1,0 +1,32 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "bekci",
+	// Own entry: adds the cron handler (the adapter's worker only exports fetch).
+	// The adapter builds to .svelte-kit/cloudflare via wrangler.adapter.jsonc.
+	"main": "src/worker.ts",
+	"compatibility_date": "2026-08-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"build": { "command": "node build.mjs" },
+	"assets": { "binding": "ASSETS", "directory": ".svelte-kit/cloudflare" },
+	"observability": { "enabled": true },
+	"workers_dev": true,
+	"routes": [{ "pattern": "bekci.sadelabs.site", "custom_domain": true }],
+	// Fallback poll for watched wallets when no Solami webhook is configured.
+	"triggers": { "crons": ["* * * * *"] },
+	"vars": {
+		"PUBLIC_ORIGIN": "https://bekci.sadelabs.site",
+		// Used only when SOLAMI_API_KEY is not set.
+		"FALLBACK_RPC": "https://solana-rpc.publicnode.com",
+		"MAIL_FROM": "Bekci <watch@bekci.sadelabs.site>"
+	},
+	"kv_namespaces": [{ "binding": "KV", "id": "6280f150345d46be8c1468d3556cd7aa" }],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "bekci-db",
+			"database_id": "fe997256-4510-441e-82e1-c54d6ee953f7",
+			"migrations_dir": "migrations"
+		}
+	],
+	"send_email": [{ "name": "EMAIL" }]
+}
