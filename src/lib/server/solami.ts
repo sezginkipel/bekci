@@ -5,6 +5,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const API = 'https://api.solami.dev';
+// Kapalı webhook için etkisiz adres: rastgele 32 bayt, hiçbir cüzdana ait değil.
+const INERT_ADDRESS = 'HyRfCPjhBTAXGdbuF1WgshyokWiNQ4ebn2UKHs6kkhFB';
 
 export interface SolamiEnv {
 	SOLAMI_API_KEY?: string;
@@ -41,23 +43,47 @@ export async function syncWebhook(env: SolamiEnv): Promise<{ id: string; address
 	if (!webhookEnabled(env)) return null;
 	const rows = await env.DB.prepare("SELECT DISTINCT address FROM watches WHERE status = 'active' ORDER BY address").all<{ address: string }>();
 	const addresses = (rows.results ?? []).map((r) => r.address);
-	const signature = addresses.join(',');
+	const enabled = addresses.length > 0;
+	// Sürüm öneki: kural değişince eski imzayla eşleşip güncellemeyi atlamasın.
+	const signature = `v2:${enabled ? addresses.join(',') : 'off'}`;
 	if ((await meta(env.DB, 'solami_synced')) === signature && (await meta(env.DB, 'solami_webhook_id'))) {
 		return { id: (await meta(env.DB, 'solami_webhook_id'))!, addresses: addresses.length };
+	}
+	let id = await meta(env.DB, 'solami_webhook_id');
+	// İzlenen adres yoksa webhook KAPATILIR. Asla yer tutucu adres verilmez:
+	// eskiden '1111…1111' veriliyordu — o System Program, Solana'daki hemen her
+	// SOL transferinde yer alıyor; webhook saniyede yüzlerce teslimat yaptı ve
+	// 2026-09-25..27 arasında ~48 milyon istek + ~63 milyon log faturası çıktı.
+	if (!enabled) {
+		if (!id) {
+			await setMeta(env.DB, 'solami_synced', signature);
+			return null;
+		}
+		try {
+			await api(env, '/webhooks/update', { id, enabled: false });
+		} catch {
+			// Kısmi güncelleme kabul edilmezse: tam tanım, kapalı, hiç kullanılmamış bir adresle
+			// (rastgele üretildi, özel anahtarı kimsede yok; üzerinden işlem geçmez).
+			await api(env, '/webhooks/update', {
+				id, label: 'bekci-watch', url: `${env.PUBLIC_ORIGIN}/api/hooks/solami`, stream: false,
+				addresses: [INERT_ADDRESS], event_types: ['transfer'], payload_kind: 'raw',
+				transfer_filter: { mints: [], native: true, tokens: true }, tx_status: { succeeded: true, failed: false }, enabled: false
+			});
+		}
+		await setMeta(env.DB, 'solami_synced', signature);
+		return { id, addresses: 0 };
 	}
 	const spec = {
 		label: 'bekci-watch',
 		url: `${env.PUBLIC_ORIGIN}/api/hooks/solami`,
 		stream: false,
-		// Solami needs at least one address; the watcher ignores deliveries for unknown ones.
-		addresses: addresses.length ? addresses : ['11111111111111111111111111111111'],
+		addresses,
 		event_types: ['transfer', 'mint', 'burn', 'memo'],
 		payload_kind: 'raw',
 		transfer_filter: { mints: [], native: true, tokens: true },
 		tx_status: { succeeded: true, failed: false },
 		enabled: true
 	};
-	let id = await meta(env.DB, 'solami_webhook_id');
 	if (id) {
 		await api(env, '/webhooks/update', { id, ...spec });
 	} else {

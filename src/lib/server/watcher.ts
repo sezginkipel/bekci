@@ -121,6 +121,8 @@ export async function handleDelivery(env: WatchEnv, signatures: string[]): Promi
 	const rpc = makeRpc(env);
 	const active = await env.DB.prepare("SELECT DISTINCT address FROM watches WHERE status = 'active'").all<{ address: string }>();
 	const watched = new Set((active.results ?? []).map((r) => r.address));
+	// İzlenen adres yoksa teslimat hiçbir işe yaramaz: RPC'ye gitme.
+	if (!watched.size) return { txs: 0, alerts: 0 };
 	let alerts = 0;
 	const fetched = await pool(signatures.slice(0, 20), 3, async (signature) => ({ signature, tx: await fetchTransaction(rpc, signature).catch(() => null) }));
 	for (const item of fetched) {

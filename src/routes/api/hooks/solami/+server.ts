@@ -20,6 +20,13 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	}
 	const sigs = signaturesIn(payload);
 	// Answer fast; Solami retries on slow endpoints. The work continues after the response.
-	platform!.ctx.waitUntil(handleDelivery(env, sigs).then((r) => console.log('delivery', JSON.stringify(r))).catch((e) => console.log('delivery failed', (e as Error).message)));
+	// Yalnız işe yarayan teslimat günlüğe yazılır (her istekte log satırı faturaya yazılıyor).
+	platform!.ctx.waitUntil(
+		handleDelivery(env, sigs)
+			.then((r) => {
+				if (r.txs) console.log('delivery', JSON.stringify(r));
+			})
+			.catch((e) => console.log('delivery failed', (e as Error).message))
+	);
 	return json({ ok: true, signatures: sigs.length });
 };
