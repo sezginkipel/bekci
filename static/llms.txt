@@ -1,0 +1,18 @@
+# Bekçi (https://bekci.sadelabs.site)
+
+> Solana cüzdanları için salt okunur güvenlik nöbetçisi: taklit adres (zehirleme) tespiti, açık harcama yetkisi denetimi ve cüzdanla iptal, drainer hamle analizi, göndermeden önce kontrol ve e-posta nöbeti.
+
+## Özellikler
+- Taklit/lookalike adres tespiti (adres zehirleme saldırılarına karşı).
+- Açık harcama yetkisi (token approvals) listeleme ve cüzdan üzerinden iptal akışı.
+- Bilinen drainer programları ve şüpheli hesap hareketleri için uyarı.
+- Gönderim öncesi kontrol: hedef adres ve işlem türü risk skoru.
+- E-posta nöbeti: izlenen cüzdanlarda riskli hareket bildirimi.
+- Salt okunur: hiçbir işlem imzalanmaz, anahtar istenmez.
+
+## Diller
+Arayüz: Türkçe ve İngilizce.
+
+## Sayfalar
+- [/](https://bekci.sadelabs.site/): Cüzdan bağlama ve nöbet panosu.
+- [/llms.txt](https://bekci.sadelabs.site/llms.txt): Bu dosya.
