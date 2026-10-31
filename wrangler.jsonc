@@ -8,7 +8,7 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"build": { "command": "node build.mjs" },
 	"assets": { "binding": "ASSETS", "directory": ".svelte-kit/cloudflare" },
-	"observability": { "enabled": true },
+	"observability": { "enabled": false },
 	"workers_dev": true,
 	"routes": [{ "pattern": "bekci.sadelabs.site", "custom_domain": true }],
 	// Fallback poll for watched wallets when no Solami webhook is configured.
