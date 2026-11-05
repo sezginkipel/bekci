@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" width="640" height="160">
+  <defs>
+    <linearGradient id="hBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141E33"/>
+      <stop offset="100%" stop-color="#0A0F1D"/>
+    </linearGradient>
+    <radialGradient id="hLampGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F2B84B" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#F2B84B" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#F2B84B" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="hGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Left Icon Mark -->
+  <g transform="translate(16, 16)">
+    <rect width="128" height="128" rx="28" fill="url(#hBgGrad)"/>
+    <rect width="126" height="126" x="1" y="1" rx="27" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+
+    <!-- Shield Outline -->
+    <path d="M64 22 L94 36 V62 C94 84 64 104 64 104 C64 104 34 84 34 62 V36 Z" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Stylized "B" inside -->
+    <path d="M52 44 H68 C75 44 80 47.5 80 53 C80 57.5 77 60.5 73 62 C78 63.5 82 67 82 72.5 C82 79 76 83 67 83 H52 V44 Z" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="4.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    <path d="M52 62 H72" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+
+    <!-- Lantern Light -->
+    <circle cx="94" cy="36" r="14" fill="url(#hLampGlow)" filter="url(#hGlow)"/>
+    <circle cx="94" cy="36" r="6" fill="#F2B84B"/>
+    <circle cx="94" cy="36" r="3" fill="#FFFBEB"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="172" y="88" font-family="system-ui, -apple-system, 'Instrument Sans', sans-serif" font-weight="700" font-size="52" fill="#0E1726" letter-spacing="-1.5">Bekçi</text>
+  
+  <!-- Subtitle Tag -->
+  <text x="174" y="118" font-family="'JetBrains Mono', monospace" font-weight="500" font-size="16" fill="#6B7488" letter-spacing="1.5">SOLANA SECURITY WATCH</text>
+  <circle cx="310" cy="74" r="5" fill="#F2B84B"/>
+</svg>

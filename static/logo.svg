@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141E33"/>
+      <stop offset="100%" stop-color="#0A0F1D"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F2B84B" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#F2B84B" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#F2B84B" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="510" height="510" x="1" y="1" rx="111" fill="none" stroke="#1E293B" stroke-width="2"/>
+
+  <!-- Shield Outline -->
+  <path d="M256 84 L376 136 V244 C376 332 256 408 256 408 C256 408 136 332 136 244 V136 Z" 
+        fill="none" 
+        stroke="url(#shieldGrad)" 
+        stroke-width="16" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+
+  <!-- Stylized "B" Monogram inside Shield -->
+  <path d="M208 172 H272 C298 172 316 186 316 208 C316 226 304 238 288 244 C308 250 322 264 322 286 C322 312 300 328 270 328 H208 V172 Z" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="16" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <path d="M208 244 H284" 
+        stroke="#FFFFFF" 
+        stroke-width="16" 
+        stroke-linecap="round"/>
+
+  <!-- The Lantern Light (Glow + Solid Core) -->
+  <circle cx="376" cy="136" r="36" fill="url(#lampGlow)" filter="url(#glowFilter)"/>
+  <circle cx="376" cy="136" r="16" fill="#F2B84B"/>
+  <circle cx="376" cy="136" r="8" fill="#FFFBEB"/>
+</svg>
